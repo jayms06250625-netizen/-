@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로또 추첨기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ============ TOKENS (from Apple-design-analysis) ============ */
+:root{
+  --color-primary:#0066cc;
+  --color-primary-focus:#0071e3;
+  --color-primary-on-dark:#2997ff;
+  --color-ink:#1d1d1f;
+  --color-body:#1d1d1f;
+  --color-body-on-dark:#ffffff;
+  --color-body-muted:#cccccc;
+  --color-ink-muted-80:#333333;
+  --color-ink-muted-48:#7a7a7a;
+  --color-divider-soft:#f0f0f0;
+  --color-hairline:#e0e0e0;
+  --color-canvas:#ffffff;
+  --color-canvas-parchment:#f5f5f7;
+  --color-surface-pearl:#fafafc;
+  --color-surface-tile-1:#272729;
+  --color-surface-tile-2:#2a2a2c;
+  --color-surface-tile-3:#252527;
+  --color-surface-black:#000000;
+  --color-surface-chip-translucent:#d2d2d7;
+  --color-on-primary:#ffffff;
+  --color-on-dark:#ffffff;
+
+  --radius-none:0px;
+  --radius-xs:5px;
+  --radius-sm:8px;
+  --radius-md:11px;
+  --radius-lg:18px;
+  --radius-pill:9999px;
+
+  --space-xxs:4px;
+  --space-xs:8px;
+  --space-sm:12px;
+  --space-md:17px;
+  --space-lg:24px;
+  --space-xl:32px;
+  --space-xxl:48px;
+  --space-section:80px;
+
+  --font-display:'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  --font-text:'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+
+  --shadow-product:3px 5px 30px 0 rgba(0,0,0,0.22);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  font-family:var(--font-text);
+  color:var(--color-body);
+  background:var(--color-canvas);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit; text-decoration:none;}
+button{font:inherit; cursor:pointer; border:none; background:none;}
+:focus-visible{ outline:2px solid var(--color-primary-focus); outline-offset:2px; }
+
+/* ============ TYPE SCALE ============ */
+.t-display-lg{ font-family:var(--font-display); font-size:40px; font-weight:600; line-height:1.10; letter-spacing:0; }
+.t-lead{ font-family:var(--font-display); font-size:28px; font-weight:400; line-height:1.14; letter-spacing:0.196px; }
+.t-tagline{ font-family:var(--font-display); font-size:21px; font-weight:600; line-height:1.19; letter-spacing:0.231px; }
+.t-body-strong{ font-family:var(--font-text); font-size:17px; font-weight:600; line-height:1.24; letter-spacing:-0.374px; }
+.t-body{ font-family:var(--font-text); font-size:17px; font-weight:400; line-height:1.47; letter-spacing:-0.374px; }
+.t-caption{ font-family:var(--font-text); font-size:14px; font-weight:400; line-height:1.43; letter-spacing:-0.224px; }
+.t-caption-strong{ font-family:var(--font-text); font-size:14px; font-weight:600; line-height:1.29; letter-spacing:-0.224px; color:var(--color-primary-on-dark); text-transform:uppercase; }
+.t-button-large{ font-family:var(--font-text); font-size:18px; font-weight:300; line-height:1.0; }
+.t-fine-print{ font-family:var(--font-text); font-size:12px; font-weight:400; line-height:1.5; letter-spacing:-0.12px; }
+.t-nav-link{ font-family:var(--font-text); font-size:12px; font-weight:400; line-height:1.0; letter-spacing:-0.12px; }
+
+/* ============ GLOBAL NAV ============ */
+.global-nav{
+  position:sticky; top:0; z-index:100; height:44px;
+  background:var(--color-surface-black); color:var(--color-on-dark);
+  display:flex; align-items:center; justify-content:space-between; padding:0 var(--space-lg);
+}
+.global-nav .brand{ font-family:var(--font-display); font-weight:600; font-size:15px; letter-spacing:-0.2px; }
+.global-nav .nav-links{ display:flex; gap:28px; list-style:none; }
+.global-nav .nav-links a{ opacity:0.85; }
+.global-nav .nav-links a:hover{ opacity:1; }
+
+/* ============ BUTTONS ============ */
+.btn{ display:inline-flex; align-items:center; justify-content:center; border-radius:var(--radius-pill); transition:transform .12s ease, background .15s ease; white-space:nowrap; }
+.btn:active{ transform:scale(0.95); }
+.btn:disabled{ opacity:0.45; cursor:default; }
+.btn:disabled:active{ transform:none; }
+.btn-store-hero{
+  background:var(--color-primary); color:var(--color-on-primary);
+  font-family:var(--font-text); font-size:18px; font-weight:300;
+  padding:14px 30px;
+}
+.btn-store-hero:hover:not(:disabled){ background:var(--color-primary-focus); }
+.btn-secondary-pill{
+  background:transparent; color:var(--color-primary-on-dark);
+  border:1px solid var(--color-primary-on-dark);
+  font-family:var(--font-text); font-size:17px; font-weight:400; letter-spacing:-0.374px;
+  padding:11px 22px;
+}
+.text-link-on-dark{ color:var(--color-primary-on-dark); font-size:14px; }
+.text-link-on-dark:hover{ text-decoration:underline; }
+.cta-row{ display:flex; gap:var(--space-sm); justify-content:center; flex-wrap:wrap; margin-top:var(--space-lg); }
+
+/* ============ HERO / DRAW TILE ============ */
+.draw-tile{
+  background:var(--color-surface-tile-1); color:var(--color-on-dark);
+  padding:var(--space-section) var(--space-lg) var(--space-xxl);
+  text-align:center;
+  display:flex; flex-direction:column; align-items:center;
+}
+.draw-tile .lead-muted{ color:var(--color-body-muted); max-width:480px; margin:10px auto 0; }
+
+/* ============ BALLS ============ */
+.ball-row{
+  display:flex; align-items:center; justify-content:center; gap:14px;
+  flex-wrap:wrap; margin:var(--space-xxl) 0 var(--space-sm);
+}
+.plus-sign{ font-family:var(--font-display); font-size:22px; font-weight:600; color:var(--color-ink-muted-48); }
+.ball{
+  width:60px; height:60px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-display); font-weight:600; font-size:20px;
+  color:#ffffff; text-shadow:0 1px 2px rgba(0,0,0,0.25);
+  box-shadow:var(--shadow-product);
+  position:relative; background:var(--color-surface-chip-translucent);
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.ball::before{
+  content:""; position:absolute; top:9px; left:13px; width:16px; height:11px;
+  border-radius:50%; background:rgba(255,255,255,0.55); filter:blur(1px);
+}
+.ball.placeholder{ color:rgba(255,255,255,0.5); background:#3a3a3d; box-shadow:none; }
+.ball.placeholder::before{ display:none; }
+.ball.locked{ animation:pop .4s cubic-bezier(.34,1.56,.64,1); }
+@keyframes pop{ 0%{ transform:scale(0.6); } 60%{ transform:scale(1.12); } 100%{ transform:scale(1); } }
+
+.ball-yellow{ background:radial-gradient(circle at 32% 28%, #ffe58a, #fbc400 72%); }
+.ball-blue{   background:radial-gradient(circle at 32% 28%, #a6e0ff, #3fa9e0 72%); }
+.ball-red{    background:radial-gradient(circle at 32% 28%, #ffb0ac, #ff5b53 72%); }
+.ball-gray{   background:radial-gradient(circle at 32% 28%, #d4d4d6, #9a9a9e 72%); }
+.ball-green{  background:radial-gradient(circle at 32% 28%, #dcee8f, #a8cc3a 72%); }
+
+.result-copy{ margin-top:var(--space-md); min-height:20px; }
+
+/* ============ HISTORY (parchment) ============ */
+.history-section{ background:var(--color-canvas-parchment); padding:var(--space-xxl) var(--space-lg); }
+.history-inner{ max-width:640px; margin:0 auto; }
+.history-inner .section-head{ text-align:center; margin-bottom:var(--space-lg); }
+.history-empty{ text-align:center; color:var(--color-ink-muted-48); padding:var(--space-lg) 0; }
+.history-card{
+  background:var(--color-canvas);
+  border:1px solid var(--color-hairline);
+  border-radius:var(--radius-lg);
+  padding:var(--space-md) var(--space-lg);
+  display:flex; align-items:center; justify-content:space-between;
+  gap:var(--space-md); margin-bottom:12px;
+  flex-wrap:wrap;
+}
+.history-balls{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.mini-ball{
+  width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-display); font-weight:600; font-size:13px;
+  color:#fff; text-shadow:0 1px 1px rgba(0,0,0,0.25);
+}
+.history-time{ color:var(--color-ink-muted-48); }
+
+/* ============ FOOTER ============ */
+.footer{ background:var(--color-canvas-parchment); padding:0 var(--space-lg) var(--space-xxl); }
+.footer-inner{ max-width:640px; margin:0 auto; border-top:1px solid var(--color-hairline); padding-top:var(--space-lg); color:var(--color-ink-muted-48); }
+
+@media (max-width:640px){
+  .t-display-lg{ font-size:30px; }
+  .ball{ width:48px; height:48px; font-size:16px; }
+  .mini-ball{ width:26px; height:26px; font-size:12px; }
+  .history-card{ justify-content:center; text-align:center; }
+}
+</style>
+</head>
+<body>
+
+<nav class="global-nav">
+  <div class="brand">lotto draw</div>
+  <ul class="nav-links t-nav-link">
+    <li><a href="#draw">추첨</a></li>
+    <li><a href="#history">기록</a></li>
+  </ul>
+</nav>
+
+<section id="draw" class="draw-tile">
+  <div class="t-caption-strong">Random Number Generator</div>
+  <h1 class="t-display-lg" style="margin-top:10px;">이번 주 행운의 번호</h1>
+  <p class="t-lead lead-muted">1부터 45까지, 완전한 무작위 추첨입니다.</p>
+
+  <div class="ball-row" id="ballRow">
+    <div class="ball placeholder">?</div>
+    <div class="ball placeholder">?</div>
+    <div class="ball placeholder">?</div>
+    <div class="ball placeholder">?</div>
+    <div class="ball placeholder">?</div>
+    <div class="ball placeholder">?</div>
+    <span class="plus-sign">+</span>
+    <div class="ball placeholder" id="bonusBall">?</div>
+  </div>
+
+  <div class="result-copy">
+    <button class="text-link-on-dark" id="copyBtn" style="display:none;">결과 복사</button>
+  </div>
+
+  <div class="cta-row">
+    <button class="btn btn-store-hero" id="drawBtn">추첨 시작</button>
+    <button class="btn btn-secondary-pill" id="resetBtn">초기화</button>
+  </div>
+</section>
+
+<section id="history" class="history-section">
+  <div class="history-inner">
+    <div class="section-head">
+      <h2 class="t-tagline">최근 추첨 기록</h2>
+    </div>
+    <div id="historyList">
+      <p class="history-empty t-body">아직 추첨 기록이 없습니다.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner t-fine-print">
+    이 페이지는 디자인 시스템을 시연하기 위한 재미용 무작위 번호 생성기입니다. 특정 복권 발행 기관과 관련이 없으며, 실제 당첨 결과나 확률을 보장하지 않습니다.
+  </div>
+</footer>
+
+<script>
+(function(){
+  const ballRow = document.getElementById('ballRow');
+  const mainBalls = Array.from(ballRow.querySelectorAll('.ball')).slice(0, 6);
+  const bonusBall = document.getElementById('bonusBall');
+  const drawBtn = document.getElementById('drawBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  const historyList = document.getElementById('historyList');
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let history = [];
+  let lastResult = null;
+  let drawing = false;
+
+  function colorClass(n){
+    if(n<=10) return 'ball-yellow';
+    if(n<=20) return 'ball-blue';
+    if(n<=30) return 'ball-red';
+    if(n<=40) return 'ball-gray';
+    return 'ball-green';
+  }
+
+  function randomDraw(){
+    const set = new Set();
+    while(set.size < 7){ set.add(1 + Math.floor(Math.random()*45)); }
+    const arr = [...set];
+    const bonus = arr.pop();
+    arr.sort((a,b)=>a-b);
+    return { main: arr, bonus };
+  }
+
+  function setPlaceholder(){
+    [...mainBalls, bonusBall].forEach(el => {
+      el.className = 'ball placeholder';
+      el.textContent = '?';
+    });
+    copyBtn.style.display = 'none';
+  }
+
+  function lockBall(el, value){
+    el.className = 'ball ' + colorClass(value) + ' locked';
+    el.textContent = value;
+  }
+
+  function rollBall(el, durationMs, finalValue, onDone){
+    if(reduceMotion){
+      lockBall(el, finalValue);
+      if(onDone) onDone();
+      return;
+    }
+    el.className = 'ball';
+    el.style.background = '#3a3a3d';
+    const interval = setInterval(() => {
+      el.textContent = 1 + Math.floor(Math.random()*45);
+    }, 55);
+    setTimeout(() => {
+      clearInterval(interval);
+      lockBall(el, finalValue);
+      if(onDone) onDone();
+    }, durationMs);
+  }
+
+  function renderHistory(){
+    if(history.length === 0){
+      historyList.innerHTML = '<p class="history-empty t-body">아직 추첨 기록이 없습니다.</p>';
+      return;
+    }
+    historyList.innerHTML = history.slice(0,5).map(entry => {
+      const balls = entry.main.map(n => `<span class="mini-ball ${colorClass(n)}">${n}</span>`).join('');
+      const bonus = `<span class="mini-ball ${colorClass(entry.bonus)}">${entry.bonus}</span>`;
+      return `<div class="history-card">
+        <div class="history-balls">${balls}<span class="plus-sign" style="font-size:15px;">+</span>${bonus}</div>
+        <div class="history-time t-caption">${entry.time}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function draw(){
+    if(drawing) return;
+    drawing = true;
+    drawBtn.disabled = true;
+    copyBtn.style.display = 'none';
+    setPlaceholder();
+
+    const result = randomDraw();
+    let doneCount = 0;
+    const totalBalls = 7;
+
+    mainBalls.forEach((el, i) => {
+      rollBall(el, 700 + i * 220, result.main[i], () => {
+        doneCount++;
+        checkFinish();
+      });
+    });
+    rollBall(bonusBall, 700 + 6 * 220 + 300, result.bonus, () => {
+      doneCount++;
+      checkFinish();
+    });
+
+    function checkFinish(){
+      if(doneCount === totalBalls){
+        drawing = false;
+        drawBtn.disabled = false;
+        lastResult = result;
+        copyBtn.style.display = 'inline-block';
+        const now = new Date();
+        const time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+        history.unshift({ main: result.main, bonus: result.bonus, time });
+        renderHistory();
+      }
+    }
+  }
+
+  drawBtn.addEventListener('click', draw);
+  resetBtn.addEventListener('click', () => {
+    if(drawing) return;
+    setPlaceholder();
+    lastResult = null;
+  });
+  copyBtn.addEventListener('click', () => {
+    if(!lastResult) return;
+    const text = lastResult.main.join(', ') + ' + ' + lastResult.bonus;
+    navigator.clipboard && navigator.clipboard.writeText(text);
+    copyBtn.textContent = '복사됨';
+    setTimeout(() => { copyBtn.textContent = '결과 복사'; }, 1500);
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orbit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ============ TOKENS (from Apple-design-analysis) ============ */
+:root{
+  --color-primary:#0066cc;
+  --color-primary-focus:#0071e3;
+  --color-primary-on-dark:#2997ff;
+  --color-ink:#1d1d1f;
+  --color-body:#1d1d1f;
+  --color-body-on-dark:#ffffff;
+  --color-body-muted:#cccccc;
+  --color-ink-muted-80:#333333;
+  --color-ink-muted-48:#7a7a7a;
+  --color-divider-soft:#f0f0f0;
+  --color-hairline:#e0e0e0;
+  --color-canvas:#ffffff;
+  --color-canvas-parchment:#f5f5f7;
+  --color-surface-pearl:#fafafc;
+  --color-surface-tile-1:#272729;
+  --color-surface-tile-2:#2a2a2c;
+  --color-surface-tile-3:#252527;
+  --color-surface-black:#000000;
+  --color-surface-chip-translucent:#d2d2d7;
+  --color-on-primary:#ffffff;
+  --color-on-dark:#ffffff;
+
+  --radius-none:0px;
+  --radius-xs:5px;
+  --radius-sm:8px;
+  --radius-md:11px;
+  --radius-lg:18px;
+  --radius-pill:9999px;
+
+  --space-xxs:4px;
+  --space-xs:8px;
+  --space-sm:12px;
+  --space-md:17px;
+  --space-lg:24px;
+  --space-xl:32px;
+  --space-xxl:48px;
+  --space-section:80px;
+
+  --font-display:'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  --font-text:'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+
+  --shadow-product:3px 5px 30px 0 rgba(0,0,0,0.22);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-text);
+  color:var(--color-body);
+  background:var(--color-canvas);
+  -webkit-font-smoothing:antialiased;
+}
+img,svg{display:block; max-width:100%;}
+a{color:inherit; text-decoration:none;}
+button{font:inherit; cursor:pointer; border:none; background:none;}
+
+:focus-visible{outline:2px solid var(--color-primary-focus); outline-offset:2px;}
+
+/* ============ TYPE SCALE ============ */
+.t-hero-display{ font-family:var(--font-display); font-size:56px; font-weight:600; line-height:1.07; letter-spacing:-0.28px; }
+.t-display-lg{ font-family:var(--font-display); font-size:40px; font-weight:600; line-height:1.10; letter-spacing:0; }
+.t-display-md{ font-family:var(--font-text); font-size:34px; font-weight:600; line-height:1.47; letter-spacing:-0.374px; }
+.t-lead{ font-family:var(--font-display); font-size:28px; font-weight:400; line-height:1.14; letter-spacing:0.196px; }
+.t-lead-airy{ font-family:var(--font-text); font-size:24px; font-weight:300; line-height:1.5; }
+.t-tagline{ font-family:var(--font-display); font-size:21px; font-weight:600; line-height:1.19; letter-spacing:0.231px; }
+.t-body-strong{ font-family:var(--font-text); font-size:17px; font-weight:600; line-height:1.24; letter-spacing:-0.374px; }
+.t-body{ font-family:var(--font-text); font-size:17px; font-weight:400; line-height:1.47; letter-spacing:-0.374px; }
+.t-dense-link{ font-family:var(--font-text); font-size:17px; font-weight:400; line-height:2.41; }
+.t-caption{ font-family:var(--font-text); font-size:14px; font-weight:400; line-height:1.43; letter-spacing:-0.224px; }
+.t-caption-strong{ font-family:var(--font-text); font-size:14px; font-weight:600; line-height:1.29; letter-spacing:-0.224px; }
+.t-button-large{ font-family:var(--font-text); font-size:18px; font-weight:300; line-height:1.0; }
+.t-button-utility{ font-family:var(--font-text); font-size:14px; font-weight:400; line-height:1.29; letter-spacing:-0.224px; }
+.t-fine-print{ font-family:var(--font-text); font-size:12px; font-weight:400; line-height:1.0; letter-spacing:-0.12px; }
+.t-nav-link{ font-family:var(--font-text); font-size:12px; font-weight:400; line-height:1.0; letter-spacing:-0.12px; }
+
+/* ============ GLOBAL NAV ============ */
+.global-nav{
+  position:sticky; top:0; z-index:100;
+  height:44px;
+  background:var(--color-surface-black);
+  color:var(--color-on-dark);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 var(--space-lg);
+}
+.global-nav .brand{ font-family:var(--font-display); font-weight:600; font-size:15px; letter-spacing:-0.2px; }
+.global-nav .nav-links{ display:flex; gap:28px; list-style:none; }
+.global-nav .nav-links a{ opacity:0.85; transition:opacity .15s ease; }
+.global-nav .nav-links a:hover{ opacity:1; }
+.global-nav .nav-actions{ display:flex; align-items:center; gap:20px; }
+.global-nav .icon-btn{ width:16px; height:16px; opacity:0.9; }
+.nav-hamburger{ display:none; width:20px; height:14px; position:relative; }
+.nav-hamburger span{ position:absolute; left:0; right:0; height:1.4px; background:#fff; }
+.nav-hamburger span:nth-child(1){ top:0; }
+.nav-hamburger span:nth-child(2){ top:6px; }
+.nav-hamburger span:nth-child(3){ top:12px; }
+
+/* ============ BUTTONS ============ */
+.btn{ display:inline-flex; align-items:center; justify-content:center; border-radius:var(--radius-pill); transition:transform .12s ease; white-space:nowrap; }
+.btn:active{ transform:scale(0.95); }
+.btn-primary{
+  background:var(--color-primary); color:var(--color-on-primary);
+  font-family:var(--font-text); font-size:17px; font-weight:400; letter-spacing:-0.374px;
+  padding:11px 22px;
+}
+.btn-primary:hover{ background:var(--color-primary-focus); }
+.btn-secondary-pill{
+  background:transparent; color:var(--color-primary);
+  border:1px solid var(--color-primary);
+  font-family:var(--font-text); font-size:17px; font-weight:400; letter-spacing:-0.374px;
+  padding:11px 22px;
+}
+.btn-secondary-pill.on-dark{ color:var(--color-primary-on-dark); border-color:var(--color-primary-on-dark); }
+.btn-store-hero{
+  background:var(--color-primary); color:var(--color-on-primary);
+  font-family:var(--font-text); font-size:18px; font-weight:300;
+  padding:14px 28px;
+}
+.cta-row{ display:flex; gap:var(--space-sm); justify-content:center; flex-wrap:wrap; }
+
+/* ============ PRODUCT TILES ============ */
+.product-tile{
+  padding:var(--space-section) var(--space-lg);
+  text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:14px;
+}
+.product-tile-light{ background:var(--color-canvas); color:var(--color-ink); }
+.product-tile-parchment{ background:var(--color-canvas-parchment); color:var(--color-ink); }
+.product-tile-dark{ background:var(--color-surface-tile-1); color:var(--color-on-dark); }
+.product-tile-dark-2{ background:var(--color-surface-tile-2); color:var(--color-on-dark); }
+.product-tile .eyebrow-space{ height:8px; }
+.product-tile .cta-row{ margin-top:6px; margin-bottom:var(--space-xl); }
+.product-tile .tagline-copy{ max-width:520px; }
+.product-tile .tagline-copy.muted{ color:var(--color-body-muted); }
+
+.product-visual{
+  width:min(560px, 86vw);
+  height:340px;
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-product);
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Hero visual: glass slab (Orbit Air) */
+.visual-air{
+  background:linear-gradient(160deg,#eef1f5 0%, #d7dce3 55%, #c3c9d2 100%);
+}
+.visual-air::before{
+  content:"";
+  position:absolute; width:78%; height:60%;
+  border-radius:22px;
+  background:linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.15) 40%, rgba(120,140,170,0.35) 100%);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.8), 0 20px 40px rgba(30,40,60,0.18);
+  transform:rotate(-6deg);
+}
+.visual-air::after{
+  content:"";
+  position:absolute; width:6px; height:120px; border-radius:4px;
+  background:linear-gradient(180deg, var(--color-primary-on-dark), var(--color-primary));
+  right:26%; top:22%; opacity:0.85;
+}
+
+/* Watch visual */
+.visual-watch{ background:radial-gradient(circle at 30% 20%, #3a3a3d, var(--color-surface-tile-1) 70%); }
+.visual-watch .watch-body{
+  width:170px; height:210px; border-radius:56px;
+  background:linear-gradient(155deg,#4b4b4f, #1c1c1e 60%);
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.18), 0 10px 30px rgba(0,0,0,0.5);
+  position:relative;
+}
+.visual-watch .watch-face{
+  position:absolute; inset:14px; border-radius:44px;
+  background:radial-gradient(circle at 35% 30%, #0071e3, #003a70 75%);
+  display:flex; align-items:center; justify-content:center;
+}
+.visual-watch .watch-face::before{
+  content:""; width:2px; height:34px; background:var(--color-primary-on-dark);
+  border-radius:2px; box-shadow:0 0 8px rgba(41,151,255,0.9);
+}
+.visual-watch .crown{ position:absolute; right:-6px; top:70px; width:10px; height:22px; border-radius:3px; background:#5a5a5e; }
+
+/* Buds visual */
+.visual-buds{ background:linear-gradient(160deg,#ffffff 0%, #f0f0f2 60%, #e4e4e8 100%); }
+.visual-buds .case{
+  width:150px; height:110px; border-radius:26px;
+  background:linear-gradient(150deg,#fdfdfe, #e9e9ec 75%);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.9), 0 14px 26px rgba(30,30,40,0.16);
+  position:relative;
+}
+.visual-buds .case::after{
+  content:""; position:absolute; left:50%; top:-6px; width:34px; height:12px;
+  background:linear-gradient(180deg,#f4f4f6,#dcdce0); border-radius:10px 10px 0 0;
+  transform:translateX(-50%);
+}
+.visual-buds .led{
+  position:absolute; right:14px; bottom:14px; width:6px; height:6px; border-radius:50%;
+  background:#34c759; box-shadow:0 0 6px rgba(52,199,89,0.8);
+}
+
+/* Laptop / Pro visual */
+.visual-pro{ background:radial-gradient(circle at 70% 15%, #3a3a3d, var(--color-surface-tile-2) 65%); }
+.visual-pro .lid{
+  width:300px; height:190px; border-radius:14px 14px 4px 4px;
+  background:linear-gradient(165deg,#e9e9ec, #b9bcc2 55%, #8d9096 100%);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.6), 0 18px 34px rgba(0,0,0,0.45);
+  position:relative; display:flex; align-items:center; justify-content:center;
+}
+.visual-pro .screen{
+  width:88%; height:80%; border-radius:8px;
+  background:linear-gradient(150deg, #0071e3, #001b3d 80%);
+}
+.visual-pro .base{
+  width:330px; height:10px; border-radius:0 0 8px 8px;
+  background:linear-gradient(90deg,#c7cad0,#9a9da3,#c7cad0);
+  margin-top:-2px;
+}
+
+/* ============ SHOP GRID (store-utility-card) ============ */
+.shop-section{ background:var(--color-canvas-parchment); padding:var(--space-section) var(--space-lg); }
+.shop-section .section-head{ text-align:center; margin-bottom:var(--space-xxl); }
+.shop-grid{
+  max-width:1100px; margin:0 auto;
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:20px;
+}
+.store-utility-card{
+  background:var(--color-canvas);
+  border:1px solid var(--color-hairline);
+  border-radius:var(--radius-lg);
+  padding:var(--space-lg);
+  text-align:left;
+}
+.store-utility-card .card-swatch{
+  width:100%; height:130px; border-radius:var(--radius-sm);
+  margin-bottom:var(--space-md);
+  display:flex; align-items:center; justify-content:center;
+}
+.store-utility-card .name{ font-family:var(--font-text); font-size:17px; font-weight:600; letter-spacing:-0.374px; color:var(--color-ink); margin-bottom:4px; }
+.store-utility-card .price{ font-family:var(--font-text); font-size:17px; font-weight:400; letter-spacing:-0.374px; color:var(--color-ink-muted-80); margin-bottom:10px; }
+.store-utility-card .buy-link{ color:var(--color-primary); font-size:17px; }
+.store-utility-card .buy-link:hover{ text-decoration:underline; }
+
+.swatch-air{ background:linear-gradient(150deg,#eef1f5,#c3c9d2); }
+.swatch-watch{ background:linear-gradient(150deg,#3a3a3d,#1c1c1e); }
+.swatch-buds{ background:linear-gradient(150deg,#ffffff,#e4e4e8); }
+.swatch-case{ background:linear-gradient(150deg,#dfe3e8,#aeb3ba); }
+
+/* ============ FOOTER ============ */
+.footer{
+  background:var(--color-canvas-parchment);
+  color:var(--color-ink-muted-80);
+  padding:64px var(--space-lg) var(--space-lg);
+}
+.footer-inner{ max-width:1100px; margin:0 auto; }
+.footer-hairline{ border:none; border-top:1px solid var(--color-hairline); margin-bottom:var(--space-xl); }
+.footer-cols{ display:grid; grid-template-columns:repeat(4,1fr); gap:var(--space-lg); margin-bottom:var(--space-xl); }
+.footer-cols h4{ font-family:var(--font-text); font-size:14px; font-weight:600; letter-spacing:-0.224px; color:var(--color-ink); margin-bottom:6px; }
+.footer-cols ul{ list-style:none; }
+.footer-cols li a{ font-family:var(--font-text); font-size:17px; font-weight:400; line-height:2.41; color:var(--color-ink-muted-80); }
+.footer-cols li a:hover{ text-decoration:underline; }
+.footer-legal{ font-family:var(--font-text); font-size:12px; font-weight:400; letter-spacing:-0.12px; color:var(--color-ink-muted-48); }
+
+/* ============ SCROLL REVEAL (restrained) ============ */
+.reveal{ opacity:0; transform:translateY(14px); transition:opacity .7s ease, transform .7s ease; }
+.reveal.is-visible{ opacity:1; transform:translateY(0); }
+@media (prefers-reduced-motion: reduce){
+  .reveal{ opacity:1; transform:none; transition:none; }
+  html{ scroll-behavior:auto; }
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:1068px){
+  .t-hero-display{ font-size:40px; }
+  .shop-grid{ grid-template-columns:repeat(3,1fr); }
+}
+@media (max-width:833px){
+  .global-nav .nav-links{ display:none; }
+  .nav-hamburger{ display:block; }
+  .shop-grid{ grid-template-columns:repeat(2,1fr); }
+  .footer-cols{ grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:734px){
+  .product-tile{ padding:48px var(--space-lg); }
+}
+@media (max-width:640px){
+  .t-hero-display{ font-size:34px; }
+  .t-display-lg{ font-size:30px; }
+  .product-visual{ height:260px; }
+}
+@media (max-width:480px){
+  .t-hero-display{ font-size:28px; }
+  .shop-grid{ grid-template-columns:1fr 1fr; }
+  .footer-cols{ grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- GLOBAL NAV -->
+<nav class="global-nav">
+  <div class="brand">orbit</div>
+  <ul class="nav-links t-nav-link">
+    <li><a href="#hero">Air</a></li>
+    <li><a href="#watch">Watch</a></li>
+    <li><a href="#buds">Buds</a></li>
+    <li><a href="#pro">Pro</a></li>
+    <li><a href="#shop">Store</a></li>
+  </ul>
+  <div class="nav-actions">
+    <svg class="icon-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <svg class="icon-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+    <button class="nav-hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" class="product-tile product-tile-light">
+  <h1 class="t-hero-display reveal">Orbit Air</h1>
+  <p class="t-lead tagline-copy reveal">Unbelievably thin. Unmistakably fast.</p>
+  <div class="cta-row reveal">
+    <a href="#" class="btn btn-secondary-pill">Learn more</a>
+    <a href="#" class="btn btn-primary">Buy</a>
+  </div>
+  <div class="product-visual visual-air reveal" role="img" aria-label="Orbit Air device resting on a light surface"></div>
+</section>
+
+<!-- WATCH (dark tile) -->
+<section id="watch" class="product-tile product-tile-dark">
+  <h2 class="t-display-lg reveal">Orbit Watch</h2>
+  <p class="t-lead tagline-copy muted reveal">Your day, orchestrated.</p>
+  <div class="cta-row reveal">
+    <a href="#" class="btn btn-secondary-pill on-dark">Learn more</a>
+    <a href="#" class="btn btn-primary">Buy</a>
+  </div>
+  <div class="product-visual visual-watch reveal" role="img" aria-label="Orbit Watch resting on a dark surface">
+    <div class="watch-body">
+      <div class="watch-face"></div>
+      <div class="crown"></div>
+    </div>
+  </div>
+</section>
+
+<!-- BUDS (parchment tile) -->
+<section id="buds" class="product-tile product-tile-parchment">
+  <h2 class="t-display-lg reveal">Orbit Buds</h2>
+  <p class="t-lead tagline-copy reveal">Sound, uncluttered.</p>
+  <div class="cta-row reveal">
+    <a href="#" class="btn btn-secondary-pill">Learn more</a>
+    <a href="#" class="btn btn-primary">Buy</a>
+  </div>
+  <div class="product-visual visual-buds reveal" role="img" aria-label="Orbit Buds case resting on a light surface">
+    <div class="case"><span class="led"></span></div>
+  </div>
+</section>
+
+<!-- PRO (dark-2 tile) -->
+<section id="pro" class="product-tile product-tile-dark-2">
+  <h2 class="t-display-lg reveal">Orbit Pro</h2>
+  <p class="t-lead tagline-copy muted reveal">Power that disappears into the work.</p>
+  <div class="cta-row reveal">
+    <a href="#" class="btn btn-secondary-pill on-dark">Learn more</a>
+    <a href="#" class="btn btn-primary">Buy</a>
+  </div>
+  <div class="product-visual visual-pro reveal" role="img" aria-label="Orbit Pro laptop resting on a dark surface">
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <div class="lid"><div class="screen"></div></div>
+      <div class="base"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SHOP GRID -->
+<section id="shop" class="shop-section">
+  <div class="section-head reveal">
+    <h2 class="t-tagline">Shop the lineup</h2>
+  </div>
+  <div class="shop-grid">
+    <div class="store-utility-card reveal">
+      <div class="card-swatch swatch-air"></div>
+      <div class="name">Orbit Air</div>
+      <div class="price">From $999</div>
+      <a href="#" class="buy-link">Buy</a>
+    </div>
+    <div class="store-utility-card reveal">
+      <div class="card-swatch swatch-watch"></div>
+      <div class="name">Orbit Watch</div>
+      <div class="price">From $399</div>
+      <a href="#" class="buy-link">Buy</a>
+    </div>
+    <div class="store-utility-card reveal">
+      <div class="card-swatch swatch-buds"></div>
+      <div class="name">Orbit Buds</div>
+      <div class="price">From $179</div>
+      <a href="#" class="buy-link">Buy</a>
+    </div>
+    <div class="store-utility-card reveal">
+      <div class="card-swatch swatch-case"></div>
+      <div class="name">Orbit Case</div>
+      <div class="price">From $49</div>
+      <a href="#" class="buy-link">Buy</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <hr class="footer-hairline">
+    <div class="footer-cols">
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#">Orbit Air</a></li>
+          <li><a href="#">Orbit Watch</a></li>
+          <li><a href="#">Orbit Buds</a></li>
+          <li><a href="#">Orbit Pro</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="#">Why Orbit</a></li>
+          <li><a href="#">Trade In</a></li>
+          <li><a href="#">Financing</a></li>
+          <li><a href="#">Gift Cards</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Account</h4>
+        <ul>
+          <li><a href="#">Manage Orders</a></li>
+          <li><a href="#">Sign In</a></li>
+          <li><a href="#">Orbit Wallet</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Repairs</a></li>
+          <li><a href="#">AppleCare-style Plans</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-legal">
+      Copyright © 2026 Orbit, Inc. All rights reserved. Prices shown are illustrative. This page is a design-system demonstration and is not affiliated with any device manufacturer.
+    </div>
+  </div>
+</footer>
+
+<script>
+  // mobile menu (simple toggle)
+  const hamburger = document.querySelector('.nav-hamburger');
+  const links = document.querySelector('.nav-links');
+  hamburger.addEventListener('click', () => {
+    const showing = links.style.display === 'flex';
+    links.style.display = showing ? 'none' : 'flex';
+    links.style.cssText += showing ? '' : 'position:absolute; top:44px; left:0; right:0; flex-direction:column; background:#000; padding:16px 24px; gap:16px;';
+  });
+
+  // restrained scroll reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
